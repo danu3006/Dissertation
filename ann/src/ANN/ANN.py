@@ -1,14 +1,17 @@
-from typing import List, Any, Callable
+from typing import List, Any, Callable, Dict
 
 import tensorflow as tf
+
+__author__ = "Danu Kumanan"
+__version__ = "1.0.0"
 
 
 class ANN:
     """ Artificial Neural Network class to auto-generate all hidden layer sizes and weights """
 
     __n_nodes: List[int] = list()
-    __hidden_layers: List[dict] = list()
-    __output_layer = dict()
+    __hidden_layers: List[Dict] = list()
+    __output_layer: Dict = dict()
     __layer_outputs: List[Any] = list()
     __training_data: List[Any] = list()
 
@@ -80,8 +83,6 @@ class ANN:
         :rtype: tensor
         """
         for layer, data in enumerate(self.__hidden_layers):
-
-            # Set pre-activation depending on layer
             if layer is 0:
                 pre_activation = tf.add(tf.matmul(input_data, data['weights']), data['biases'])
             else:
@@ -89,7 +90,7 @@ class ANN:
 
             self.__layer_outputs.append(activation(pre_activation))
 
-        matrix_mult = tf.matmul(self.__layer_outputs[len(self.__hidden_layers) - 1], self.__output_layer['weights'])
+        matrix_mult = tf.matmul(self.__layer_outputs[-1], self.__output_layer['weights'])
         return tf.add(matrix_mult, self.__output_layer['biases'])
 
     def train_network(self, input_data, learning_rate):
