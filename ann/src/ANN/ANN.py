@@ -72,25 +72,26 @@ class ANN:
         """
         return self.__output_layer
 
-    def feed_forward(self, input_data, *, activation: Callable):
+    def feed_forward(self, input_data, *, activation: Callable = tf.nn.relu):
         """ Executes one feed-forward loop with given data and activation
 
         :param input_data: A tensor with input data to feed-forward
         :type input_data: tensor
-        :param activation: The type of activation eg. RELU
+        :param activation: The type of activation default = ReLU (Rectified Linear)
         :type activation: Callable
         :return: A tensor containing the post-activation data of the network
         :rtype: tensor
         """
         for layer, data in enumerate(self.__hidden_layers):
             if layer is 0:
-                pre_activation = tf.add(tf.matmul(input_data, data['weights']), data['biases'])
+                evidence = tf.add(tf.matmul(input_data, data['weights']), data['biases'])
             else:
-                pre_activation = tf.add(tf.matmul(self.__hidden_layers[layer - 1], data['weights']), data['biases'])
+                evidence = tf.add(tf.matmul(self.__layer_outputs[layer - 1], data['weights']), data['biases'])
 
-            self.__layer_outputs.append(activation(pre_activation))
+            self.__layer_outputs.append(activation(evidence))
 
         matrix_mult = tf.matmul(self.__layer_outputs[-1], self.__output_layer['weights'])
+
         return tf.add(matrix_mult, self.__output_layer['biases'])
 
     def train_network(self, input_data, learning_rate):
